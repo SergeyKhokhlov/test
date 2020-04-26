@@ -7,20 +7,20 @@ TOKEN = "1213926896:AAGeW9NZeh6AJebSQCyudrMcy10hQdfuH0E"
 
 def start(update, context):
     reply_keyboard = [["Написать отзыв", "Написать в техническую поддержку"]]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     update.message.reply_text("В этом боте вы можете написать нам свой отзыв о нашем сайте"
-                              "или обратиться в техническую поддержку", markup=markup)
+                              " или обратиться в техническую поддержку", markup=markup)
 
 
 def write_feedback(update, context):
     reply_keyboard = [["Написать отзыв", "Написать в техническую поддержку"]]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     update.message.reply_text("Спасибо что решили написать отзыв про нас!", markup=markup)
 
 
 def write_about_error(update, context):
     reply_keyboard = [["Написать отзыв", "Написать в техническую поддержку"]]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     update.message.reply_text("Мы обязательно поможем вам! Напишите подробно о вашей ошибки!",
                               markup=markup)
 
