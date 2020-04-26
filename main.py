@@ -1,17 +1,14 @@
 from flask import Flask, render_template, redirect, request, make_response, session, abort
-from flask_wtf import FlaskForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_manager, \
     login_required
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, BooleanField
-from wtforms.validators import DataRequired
 from data import db_session, users, login_class, registration, redefine_roles, news, \
     translater, forum_db, forum, answer_on_question, ask_question, settings, settings_db, \
-    chatsform, edit_profile_form, api_func
+    chatsform, edit_profile_form, api_func, tg_bot
 from random import choice
-from flask_restful import reqparse, abort, Api, Resource
+from flask_restful import abort, Api
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_socketio import SocketIO, send
-import feedparser, pprint, json, os, datetime
+import feedparser, json, os, datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'matesearch_secretkey'
@@ -348,20 +345,6 @@ def searchmates(game):
     return render_template('search.html', colors=colors, game=game, main_color=main_color)
 
 
-@app.route("/cyberclubs")
-def cyberclubs():
-    check_last_page()
-    sessions = db_session.create_session()
-    try:
-        settings_info = sessions.query(settings_db.Settings_db).filter(
-            settings_db.Settings_db.user_id == current_user.id).first()
-        main_color = settings_info.theme
-    except AttributeError:
-        main_color = "white"
-    colors = choice(["primary", "success", "danger", "info"])
-    return render_template('cyberclubs.html', colors=colors, main_color=main_color)
-
-
 @app.route("/profile/<int:id>")
 @login_required
 def user_info(id):
@@ -505,17 +488,21 @@ def notifications():
     if notifications == [""]:
         message = "You don't have any new requests"
     else:
-        print(1)
-        print(notifications)
         for i in notifications[1:]:
             print(i[1:-1])
             items = list(map(int, i[1:-1].split(";")))
             user = session.query(users.User).get(items[0])
             new_notifications += [[user, items[1], items[2]]]
-    print(new_notifications)
+    try:
+        sessions = db_session.create_session()
+        settings_info = sessions.query(settings_db.Settings_db).filter(
+            settings_db.Settings_db.user_id == current_user.id).first()
+        main_color = settings_info.theme
+    except AttributeError:
+        main_color = "white"
     colors = choice(["primary", "success", "danger", "info"])
     return render_template("notifications.html", notifications=new_notifications, colors=colors,
-                           message=message)
+                           message=message, main_color=main_color)
 
 
 @app.route(
